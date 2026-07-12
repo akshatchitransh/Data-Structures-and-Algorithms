@@ -39,7 +39,7 @@ public:
                 if(nr >= 0 && nr < n && nc >= 0 && nc < m) {
 
                     int newEffort = max(
-                        effort,
+                       dist[row][col],
                         abs(heights[row][col] - heights[nr][nc])
                     );
 
