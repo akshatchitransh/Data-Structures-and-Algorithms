@@ -35,7 +35,10 @@ public:
             if(stops == k + 1)
                 continue;
 
-            for(auto &[next, wt] : adj[node]){
+           for(auto it : adj[node]){
+    int next = it.first;
+    int wt = it.second;
+
 
                 if(cost + wt < dist[next][stops + 1]){
                     dist[next][stops + 1] = cost + wt;
