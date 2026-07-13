@@ -2,51 +2,55 @@ class Solution {
 public:
     int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
 
-        vector<vector<pair<int,int>>> adj(n);
+        vector<vector<pair<int,int>>> graph(n);
 
-        for(auto &it : flights){
-            adj[it[0]].push_back({it[1], it[2]});
+        for (auto &it : flights) {
+            int u = it[0];
+            int v = it[1];
+            int wt = it[2];
+            graph[u].push_back({v, wt});
         }
 
-       
         priority_queue<
-            pair<int,pair<int,int>>,
-            vector<pair<int,pair<int,int>>>,
-            greater<pair<int,pair<int,int>>>
+            pair<int, pair<int,int>>,
+            vector<pair<int, pair<int,int>>>,
+            greater<pair<int, pair<int,int>>>
         > pq;
 
-        vector<vector<int>> dist(n, vector<int>(k + 2, INT_MAX));
+        vector<int> dist(n, INT_MAX);
 
-        dist[src][0] = 0;
-        pq.push({0, {src, 0}});
+        dist[src] = 0;
+        pq.push({0, {src, 0}});   // {stops, {node, cost}}
 
-        while(!pq.empty()){
+        while (!pq.empty()) {
 
-            auto cur = pq.top();
+            auto top = pq.top();
             pq.pop();
 
-            int cost  = cur.first;
-            int node  = cur.second.first;
-            int stops = cur.second.second;
+            int stops = top.first;
+            int node = top.second.first;
+            int cost = top.second.second;
 
-            if(node == dst)
-                return cost;
-
-            if(stops == k + 1)
+            if (stops > k)
                 continue;
 
-           for(auto it : adj[node]){
-    int next = it.first;
-    int wt = it.second;
+            for (auto nbr : graph[node]) {
 
+                int next = nbr.first;
+                int wt = nbr.second;
 
-                if(cost + wt < dist[next][stops + 1]){
-                    dist[next][stops + 1] = cost + wt;
-                    pq.push({cost + wt, {next, stops + 1}});
+                int newCost = cost + wt;
+
+                if (newCost < dist[next]) {
+                    dist[next] = newCost;
+                    pq.push({stops + 1, {next, newCost}});
                 }
             }
         }
 
-        return -1;
+        if (dist[dst] == INT_MAX)
+            return -1;
+
+        return dist[dst];
     }
 };
