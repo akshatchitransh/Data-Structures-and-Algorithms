@@ -5,21 +5,20 @@ public:
         int n = heights.size();
         int m = heights[0].size();
 
-        vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
-
         priority_queue<
-            pair<int, pair<int,int>>,
-            vector<pair<int, pair<int,int>>>,
-            greater<pair<int, pair<int,int>>>
+            pair<int, pair<int, int>>,
+            vector<pair<int, pair<int, int>>>,
+            greater<pair<int, pair<int, int>>>
         > pq;
 
-        dist[0][0] = 0;
-        pq.push({0, {0, 0}});
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
 
         int dr[] = {-1, 0, 1, 0};
         int dc[] = {0, 1, 0, -1};
 
-        while(!pq.empty()) {
+        pq.push({0, {0, 0}});
+
+        while (!pq.empty()) {
 
             auto cur = pq.top();
             pq.pop();
@@ -28,26 +27,27 @@ public:
             int row = cur.second.first;
             int col = cur.second.second;
 
-            if(row == n - 1 && col == m - 1)
+            if (visited[row][col])
+                continue;
+
+            visited[row][col] = true;
+
+            if (row == n - 1 && col == m - 1)
                 return effort;
 
-            for(int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i++) {
 
                 int nr = row + dr[i];
                 int nc = col + dc[i];
 
-                if(nr >= 0 && nr < n && nc >= 0 && nc < m) {
+                if (nr >= 0 && nr < n && nc >= 0 && nc < m && !visited[nr][nc]) {
 
                     int newEffort = max(
-                       dist[row][col],
+                        effort,
                         abs(heights[row][col] - heights[nr][nc])
                     );
 
-                    if(newEffort < dist[nr][nc]) {
-
-                        dist[nr][nc] = newEffort;
-                        pq.push({newEffort, {nr, nc}});
-                    }
+                    pq.push({newEffort, {nr, nc}});
                 }
             }
         }
